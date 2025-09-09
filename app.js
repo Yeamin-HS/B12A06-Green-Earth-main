@@ -82,7 +82,7 @@ const renderCards = (items=[]) => {
     const idValue = pickId(item);
 
     const card = document.createElement("div");
-    card.className = "card bg-base-100 shadow";
+    card.className = "card bg-base-100 shadow-2xl hover:shadow-green-700/50 hover:scale-[1.02] transition-transform duration-300";
     card.innerHTML = `
       <figure class="h-40 bg-base-200 overflow-hidden shadow-2xl flex items-center justify-center">
         <img src="${img }" alt="${name}" class="w-50 h-50 object-cover">
