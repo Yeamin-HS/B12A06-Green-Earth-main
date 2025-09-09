@@ -21,3 +21,11 @@ Destructuring means pulls values out from arrays or objects into variables :
 const [yooo, sheii] = [10, 20];
 
 thats how variables will assigned value of list or object easily 
+
+
+### 5) Explain template literals in ES6. How are they different from string concatenation?
+Template literals use backticks and allow multi-line strings and embedded expressions .For an example
+const name = "yeamin";
+const age = 10;
+console.log(`nam: ${name}, age: ${age}`);
+They are more readable than concatenation ("nam: " + name + ", age: " + age) and support multi-line text etc.
