@@ -49,19 +49,22 @@ function pickId(item = {}) {
 
 // Handle duplicate items 
 function doubleHandler(item) {
-  
   const existing = cart.find(p => p.id === item.id);
-  
-  if (existing) {
- 
-    existing.qty = (existing.qty || 1) + 1;
-    existing.price = Number(item.price); 
-  } else {
 
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+    existing.price = Number(item.price);
+  } else {
     cart.push({ ...item, qty: 1 });
   }
 
   renderCart();
+
+  // just mobile er jonne
+
+  if (window.innerWidth < 768) {
+    displaymsg(`${item.name} added to cart!`);
+  }
 }
 
 
@@ -337,15 +340,26 @@ async function loadPlantsByCategory(id) {
 })();
 
 function displaymsg(msg, type = "SUCCESS") {
-    const notify = document.createElement("div");
-    notify.className = `fixed top-4 right-0 left-6 z-50 p-2 rounded-lg shadow-lg transition-opacity-1 duration-300 ${type.toLowerCase() === 'success' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'}`;
-    notify.textContent = msg;
+  const notify = document.createElement("div");
 
-    document.body.appendChild(notify);
-    setTimeout(() => {
-        notify.remove();
-    }, 5000);
+  // Auto width based on text length
+  const fontSize = msg.length > 50 ? "text-sm" : "text-base";
+
+  notify.className = `
+    fixed top-4 right-4 z-50 
+    px-4 py-2 rounded-lg shadow-lg
+    transition-opacity duration-400
+    ${fontSize}
+    ${type.toLowerCase() === "success" ? "bg-green-500 text-white" : "bg-blue-500 text-white"}
+  `;
+
+  notify.textContent = msg;
+
+  document.body.appendChild(notify);
+
+  setTimeout(() => notify.remove(), 4000);
 }
+
 
 
 
