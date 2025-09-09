@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<<<<<<< HEAD
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yeamin's Green Earth | Plant a Tree</title>
@@ -10,8 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- DaisyUI (CDN build) -->
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkfKc2R7Cx4oGDN5gV1N3Gq5GkZ2v5Y2v2T8nWf4Z9e5qZl+z1r6d2T9w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+      
+
+
 
   <meta name="description" content="Plant a tree, grow a future. Explore categories, add trees to cart, and support reforestation."/>
 
@@ -29,20 +31,11 @@
     };
   </script>
   <style>
-    .banner-bg{
-      background-image: url('https://images.unsplash.com/photo-1542601098-8fc114e148e8?q=80&w=1500&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
-    }
+    
     .active-cat{
       @apply btn btn-sm btn-active bg-primary text-white;
     }
   </style>
-=======
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>workflow</title>
->>>>>>> 7d77fa4611371e5f343ebdb1da0a5d103f3c3583
 </head>
 <body class="min-h-screen flex flex-col">
   <!-- NAVBAR -->
@@ -51,7 +44,7 @@
       <!--logo ekhane-->
       <div class="flext items-center space-x-2">
         <!-- <img src="/assets/plants2.jpeg" alt="Green Earth Logo" class="h-8 w-8 sm:w-10 object-contain" loading="lazy"> -->
-        <span class="text-xl sm:text-2xl  text-white font-bold ">Green Earth</span>
+        <span class="text-xl sm:text-2xl  text-white font-bold ">Green Earth </span>
       </div>
 
       <!--nav link-->
@@ -107,20 +100,20 @@
   <main id="catalog" class="container mx-auto px-3 py-8 flex-1">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- LEFT: Categories -->
-      <aside class="lg:col-span-3">
-        <div class="card bg-base-100 shadow">
+      <aside class="lg:col-span-2">
+        
           <div class="card-body">
             <h2 class="card-title items-center gap-2"><i class="fa-solid fa-layer-group text-primary"></i> Categories</h2>
             <div id="categoryList" class="flex flex-wrap gap-2 mt-2">
               <!-- dynamic buttons -->
             </div>
           </div>
-        </div>
+        
 
         <!-- CART (mobile) -->
-        <div class="lg:hidden mt-6">
-          <div class="card bg-base-100 shadow">
-            <div class="card-body">
+        <div class="lg:hidden mt-6 ">
+          <div class="card bg-base-200 shadow-2xl">
+            <div class="card-body shadow-2xl">
               <div class="flex items-center justify-between">
                 <h2 class="card-title items-center gap-2">
                   <i class="fa-solid fa-cart-shopping text-primary"></i> Your Cart
@@ -152,8 +145,8 @@
       </section>
 
       <!-- RIGHT: Cart (desktop) -->
-      <aside class="lg:col-span-3 hidden lg:block">
-        <div class="card bg-base-100 shadow sticky top-6">
+      <aside class="lg:col-span-3 hidden lg:block ">
+        <div class="card bg-base-white-200 shadow-2xl sticky top-6">
           <div class="card-body">
             <div class="flex items-center justify-between">
               <h2 class="card-title items-center gap-2"><i class="fa-solid fa-cart-shopping text-primary"></i> Your Cart</h2>
@@ -172,46 +165,68 @@
   </main>
 
   <!-- ABOUT -->
-  <section id="about" class="container mx-auto px-3 py-12">
-    <h2 class="text-2xl font-bold mb-6">About the Campaign</h2>
-    <div class="grid md:grid-cols-2 gap-6 items-center">
-      <img class="rounded-2xl shadow" src="https://images.unsplash.com/photo-1496498808361-7bfc8e21ea12?q=80&w=1200&auto=format&fit=crop" alt="Community planting trees">
-      <div>
-        <p class="leading-relaxed">
-          Green Earth is a community-driven effort to plant climate-resilient trees across neighborhoods, school yards, and riverbanks.
-          Your contribution supports nursery care, sapling distribution, and after-planting maintenance for higher survival rates.
+  <section id="about" class="py-16 bg-green-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+      About the Campaign
+    </h2>
+
+    <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
+      <!-- Image -->
+      <div class="w-full lg:w-1/2 flex justify-center lg:justify-end">
+        <img src="/assets/about.png" alt="Decorative about campaign image" class="max-w-lg w-full h-auto">
+      </div>
+
+      <!-- Text -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left lg:pl-6 mt-20">
+        <p class="text-gray-600 mb-6 text-lg leading-relaxed">
+          Green Earth is a global tree plantation initiative dedicated to fighting
+          climate change. Since our start, we've planted over 500,000 trees worldwide. 
+          By joining our campaign, you help restore forests, create habitats for wildlife,
+          and combat global warming.
         </p>
-        <ul class="mt-4 space-y-2 text-sm">
-          <li><i class="fa-solid fa-check text-primary mr-2"></i>Local species selected for soil and weather</li>
-          <li><i class="fa-solid fa-check text-primary mr-2"></i>Transparent pricing and verified partners</li>
-          <li><i class="fa-solid fa-check text-primary mr-2"></i>Volunteer events every month</li>
+
+        <ul class="space-y-4 text-gray-600">
+          <li class="flex items-center justify-center lg:justify-start">
+            <span class="w-2 h-2 bg-black rounded-full mr-4"></span>
+            <span class="text-lg">Restoration of natural habitats</span>
+          </li>
+          <li class="flex items-center justify-center lg:justify-start">
+            <span class="w-2 h-2 bg-black rounded-full mr-4"></span>
+            <span class="text-lg">Improvement of air quality</span>
+          </li>
+          <li class="flex items-center justify-center lg:justify-start">
+            <span class="w-2 h-2 bg-black rounded-full mr-4"></span>
+            <span class="text-lg">Support for local communities</span>
+          </li>
         </ul>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- IMPACT -->
-  <section id="impact" class="bg-base-200">
+  <section id="impact" class="bg-green-100 text-green-700">
     <div class="container mx-auto px-3 py-12">
-      <h2 class="text-2xl font-bold mb-8">Our Impact</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="stat bg-base-100 rounded-box shadow">
+      <h2 class="text-2xl font-bold mb-8 text-center">Our Impact</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-9 z-10">
+        <div class="stat bg-base-100 rounded-box shadow-2xl hover:scale-105 transition-transform">
           <div class="stat-figure text-primary"><i class="fa-solid fa-people-group"></i></div>
-          <div class="stat-title">Volunteers</div>
-          <div class="stat-value">120+</div>
-          <div class="stat-desc">Active in 6 cities</div>
+      
+          <div class="stat-value font-semibold mb-4 text-center">500K+</div>
+          <div class="stat-desc mb-10 text-center">Numbers of trees Planted</div>
         </div>
-        <div class="stat bg-base-100 rounded-box shadow">
+        <div class="stat bg-base-100 rounded-box shadow-2xl hover:scale-105 transition-transform">
           <div class="stat-figure text-primary"><i class="fa-solid fa-seedling"></i></div>
-          <div class="stat-title">Trees Planted</div>
-          <div class="stat-value">500K+</div>
-          <div class="stat-desc">Since 2019</div>
+   
+          <div class="stat-value font-semibold text-center">120+</div>
+          <div class="stat-desc text-center">Communities Involved</div>
         </div>
-        <div class="stat bg-base-100 rounded-box shadow">
+        <div class="stat bg-base-100 rounded-box shadow-2xl hover:scale-105 transition-transform">
           <div class="stat-figure text-primary"><i class="fa-solid fa-earth-asia"></i></div>
-          <div class="stat-title">Projects</div>
-          <div class="stat-value">30+</div>
-          <div class="stat-desc">Schools & riverbanks</div>
+ 
+          <div class="stat-value font-semibold text-center">30+</div>
+          <div class="stat-desc text-center">Countries Reached</div>
         </div>
       </div>
     </div>
@@ -257,7 +272,7 @@
 
 
   <!-- FOOTER -->
-<footer class=" text-white  py-8 shadow-lg" style="background-color: rgb(21,129,65);">
+<footer class=" text-white  py-8 shadow-lg" style="background-color: rgb(12, 77, 38);">
     <div class="container mx-auto px-3 text-center">
       <p>&copy; 2024 Green Earth. All rights reserved.</p>
       <p class="text-sm mt-2">Designed by Yeamin Hossain Shihab</p>

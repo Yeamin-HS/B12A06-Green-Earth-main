@@ -1,7 +1,6 @@
-// API base
+
 const API = "https://openapi.programming-hero.com/api";
 
-// DOM elements
 const categoryList = document.getElementById("categoryList");
 const cards = document.getElementById("cards");
 const loading = document.getElementById("loading");
@@ -16,12 +15,12 @@ const plantModal = document.getElementById("plantModal");
 const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
 
-// State
+
 let categories = [];
 let activeCategoryId = "all";
 let cart = []; // {id, name, price}
 
-// Helpers
+
 const fmtBDT = (n) => `৳${Number(n || 0).toLocaleString("en-BD")}`;
 
 const showSpinner = (show) => {
@@ -32,35 +31,71 @@ const setActiveButton = (id) => {
   activeCategoryId = id;
   [...categoryList.querySelectorAll("button")].forEach(btn => {
     if (btn.dataset.id === id) {
-      btn.classList.add("btn-active", "bg-primary", "text-white");
+      btn.classList.add("btn-active", "bg-primary", "text-black");
     } else {
-      btn.classList.remove("btn-active", "bg-primary", "text-white");
+      btn.classList.remove("btn-active", "bg-primary", "text-black");
     }
   });
 };
+
+
+function pickId(item = {}) {
+  if (item.id) return item.id;
+  if (item._id) return item._id.$oid || item._id; 
+  if (item.slug) return item.slug;
+  if (item.unique_id) return item.unique_id;
+  return "";
+}
+
+// Handle duplicate items 
+function doubleHandler(item) {
+  
+  const existing = cart.find(p => p.id === item.id);
+  
+  if (existing) {
+ 
+    existing.qty = (existing.qty || 1) + 1;
+    existing.price = Number(item.price); 
+  } else {
+
+    cart.push({ ...item, qty: 1 });
+  }
+
+  renderCart();
+}
+
+
+
+
+
 
 const renderCards = (items=[]) => {
   cards.innerHTML = "";
   emptyState.classList.toggle("hidden", items.length !== 0);
 
   items.forEach(item => {
-    // price may be number or string, coerce
-    const price = Number(item.price ?? 0);
+    // normalize fields with many possible keys
+    const name = item.name || item.title || item.plant_name || "Unknown Plant";
+    const img = item.image || item.img || item.thumbnail || "";
+    const price = Number(item.price ?? item.cost ?? 0);
+    const category = item.category || item.category_name || item.type || "Tree";
+    const idValue = pickId(item);
+
     const card = document.createElement("div");
     card.className = "card bg-base-100 shadow";
     card.innerHTML = `
-      <figure class="h-40 bg-base-200 overflow-hidden">
-        <img src="${item.image || item.img || 'https://images.unsplash.com/photo-1528476513691-07bfa1edb6a3?q=80&w=800&auto=format&fit=crop'}" alt="${item.name}" class="w-full h-full object-cover">
+      <figure class="h-40 bg-base-200 overflow-hidden shadow-2xl flex items-center justify-center">
+        <img src="${img }" alt="${name}" class="w-50 h-50 object-cover">
       </figure>
       <div class="card-body">
-        <a class="card-title hover:underline cursor-pointer text-primary" data-name-id="${item.id}">${item.name}</a>
+        <a class="card-title hover:underline hover: :focus-within outline-4 cursor-pointer text-primary" data-name-id="${idValue}">${name}</a>
         <p class="text-sm line-clamp-2">${item.description || item.short_description || "Healthy, nursery-grown sapling ready for planting."}</p>
         <div class="flex items-center justify-between mt-2 text-sm">
-          <span class="badge badge-outline">${item.category || item.category_name || "Tree"}</span>
+          <span class="badge badge-outline">${category}</span>
           <span class="font-semibold">${fmtBDT(price)}</span>
         </div>
         <div class="card-actions justify-end mt-3">
-          <button class="btn btn-sm bg-primary text-white hover:bg-green-700" data-add-id="${item.id}" data-add-name="${item.name}" data-add-price="${price}">
+          <button class="btn btn-sm bg-primary text-white hover:bg-green-700" data-add-id="${idValue}" data-add-name="${name}" data-add-price="${price}">
             <i class="fa-solid fa-cart-plus mr-2"></i>Add to Cart
           </button>
         </div>
@@ -69,10 +104,16 @@ const renderCards = (items=[]) => {
     cards.appendChild(card);
   });
 
-  // bind modal open
+  // bind modal 
   cards.querySelectorAll("[data-name-id]").forEach(a => {
     a.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-name-id");
+      if (!id) {
+        modalTitle.textContent = "Details not available";
+        modalBody.textContent = "This item does not have a valid id to fetch details.";
+        plantModal.showModal();
+        return;
+      }
       await openDetails(id);
     });
   });
@@ -88,41 +129,43 @@ const renderCards = (items=[]) => {
   });
 };
 
-const renderCart = () => {
-  const render = (ul, totalEl) => {
+function renderCart() {
+  function render(ul, totalEl) {
     ul.innerHTML = "";
     cart.forEach((item, idx) => {
       const li = document.createElement("li");
       li.className = "flex items-center justify-between text-sm p-2 rounded bg-base-200";
       li.innerHTML = `
-        <span>${item.name}</span>
+        <span>${item.name} ${item.qty > 1 ? `x ${item.qty}` : ""}</span>
         <span class="flex items-center gap-3">
-          <span class="font-medium">${fmtBDT(item.price)}</span>
-          <button class="btn btn-xs btn-error text-white" data-rm="${idx}" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+          <span class="font-medium">${fmtBDT(item.qty * item.price)}</span>
+          <button class="btn btn-xs btn-error text-white" data-rm="${idx}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </span>
       `;
       ul.appendChild(li);
     });
-    const total = cart.reduce((sum, it) => sum + Number(it.price||0), 0);
+
+    const total = cart.reduce((sum, it) => sum + (it.qty * it.price), 0);
     totalEl.textContent = fmtBDT(total);
 
-    ul.querySelectorAll("[data-rm]").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const idx = Number(e.currentTarget.getAttribute("data-rm"));
-        cart.splice(idx, 1);
+    ul.querySelectorAll("[data-rm]").forEach(btn =>
+      btn.addEventListener("click", e => {
+        cart.splice(Number(btn.dataset.rm), 1);
         renderCart();
-      });
-    });
-  };
-
+      })
+    );
+  }
   render(cartList, cartTotal);
   render(cartListMobile, cartTotalMobile);
-};
+}
 
-const addToCart = (item) => {
-  cart.push(item);
-  renderCart();
-};
+
+function addToCart(item) {
+  doubleHandler(item);
+}
+
 
 clearCartBtn?.addEventListener("click", () => { cart = []; renderCart(); });
 clearCartBtnMobile?.addEventListener("click", () => { cart = []; renderCart(); });
@@ -143,16 +186,121 @@ const fetchJSON = async (url) => {
   }
 };
 
-const loadCategories = async () => {
+function extractPlant(data = {}) {
+  
+  if (data.plant) return data.plant;
+  
+  
+  if (data.data) {
+ 
+    if (Array.isArray(data.data)) {
+      return data.data.find(el => el?.name || el?.image || el?.plant) 
+          || data.data[0];
+    }
+ 
+    if (data.data.plant) return data.data.plant;
+    if (data.data.name || data.data.image) return data.data;
+  }
+
+
+  if (data.name || data.image) return data;
+
+
+  for (const key in data) {
+    const val = data[key];
+    if (val && typeof val === "object") {
+      if (val.name || val.image) return val;
+    }
+  }
+
+  return {};
+}
+
+
+const openDetails = async (id) => {
+  modalTitle.textContent = "Loading...";
+  modalBody.innerHTML = `<div class="w-full h-48 flex items-center justify-center"><span class="loading loading-spinner text-primary"></span></div>`;
+  plantModal.showModal();
+
+  const data = await fetchJSON(`${API}/plant/${encodeURIComponent(id)}`);
+  const item = extractPlant(data) || {};
+
+  // fallback values
+  const name = item.name || item.title || "Plant Details";
+  const image = item.image || item.img || item.thumbnail;
+  const category = item.category || item.category_name || item.type || "Tree";
+  const price = Number(item.price || item.cost || 0);
+  const desc = item.description || item.long_description || item.details || "No detailed description available.";
+
+  modalTitle.textContent = name;
+//   modalBody.innerHTML = `
+//     <div class="grid md:grid-cols-2 gap-4">
+//       <img class="rounded-lg w-full h-48 object-cover bg-base-200" src="${image}" alt="${name}">
+//       <div class="text-sm space-y-2">
+//         <p><strong>Category:</strong> ${category}</p>
+//         <p><strong>Price:</strong> ${fmtBDT(price)}</p>
+//         <p class="leading-relaxed">${desc}</p>
+//         <button class="btn btn-sm bg-primary text-white hover:bg-green-700" id="modalAddBtn">
+//           <i class="fa-solid fa-cart-plus mr-2"></i>Add to Cart
+//         </button>
+//       </div>
+//     </div>
+//   `;
+
+
+modalBody.innerHTML =  `
+                        <div class="h-64 bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                            <img class="rounded-lg w-full h-ful object-cover bg-base-200" src="${image}" alt="${name}">
+                           
+                            <div class="w-full h-full flex items-center justify-center bg-green-50 rounded-lg" style="display: none;">
+                           
+                            </div>
+                        </div>
+                            
+                        <p><strong>Category:</strong> ${category}</p>
+                        <br>
+                        <p><strong>Price:</strong> ${fmtBDT(price)}</p>      
+                        <br>   
+                        <p class="leading-relaxed"><strong>Description:</strong> ${desc}</p>
+
+                        </div>
+        
+                      
+                   
+                      
+                       
+                    </div>
+                </div>`;
+
+
+
+
+
+
+  //age id then bind
+  const addId = pickId(item) || id;
+  document.getElementById("modalAddBtn")?.addEventListener("click", () => {
+    addToCart({ id: addId, name, price });
+  });
+};
+
+// Init
+(async function init(){
+  await loadCategories();
+  await loadAllPlants();
+  renderCart();
+})();
+
+// sobgula loade korar function
+async function loadCategories() {
   const data = await fetchJSON(`${API}/categories`);
-  // API shape: data.categories or data?.data?
   const list = data?.categories || data?.data || [];
   categories = [{ id: "all", category: "All Trees" }, ...list];
 
   categoryList.innerHTML = "";
   categories.forEach(cat => {
     const btn = document.createElement("button");
-    btn.className = "btn btn-sm";
+    btn.className = "btn btn-sm hover:bg-green-700";
     btn.dataset.id = String(cat.id);
     btn.textContent = cat.category || cat.category_name || "Category";
     btn.addEventListener("click", () => {
@@ -166,44 +314,20 @@ const loadCategories = async () => {
     categoryList.appendChild(btn);
   });
   setActiveButton("all");
-};
+}
 
-const loadAllPlants = async () => {
+async function loadAllPlants() {
   const data = await fetchJSON(`${API}/plants`);
   const items = data?.plants || data?.data || [];
   renderCards(items);
-};
+}
 
-const loadPlantsByCategory = async (id) => {
+async function loadPlantsByCategory(id) {
   const data = await fetchJSON(`${API}/category/${id}`);
   const items = data?.plants || data?.data || [];
   renderCards(items);
-};
+}
 
-const openDetails = async (id) => {
-  modalTitle.textContent = "Loading...";
-  modalBody.textContent = "";
-  plantModal.showModal();
-  const data = await fetchJSON(`${API}/plant/${id}`);
-  const item = data?.plant || data?.data || {};
-  modalTitle.textContent = item.name || "Plant Details";
-  modalBody.innerHTML = `
-    <div class="grid md:grid-cols-2 gap-4">
-      <img class="rounded-lg w-full h-48 object-cover bg-base-200" src="${item.image || item.img || ''}" alt="${item.name||''}">
-      <div class="text-sm space-y-2">
-        <p><strong>Category:</strong> ${item.category || item.category_name || "Tree"}</p>
-        <p><strong>Price:</strong> ${fmtBDT(item.price || 0)}</p>
-        <p class="leading-relaxed">${item.description || item.long_description || "Beautiful, fast-growing tree suitable for urban and rural planting."}</p>
-        <button class="btn btn-sm bg-primary text-white hover:bg-green-700" id="modalAddBtn">
-          <i class="fa-solid fa-cart-plus mr-2"></i>Add to Cart
-        </button>
-      </div>
-    </div>
-  `;
-  document.getElementById("modalAddBtn")?.addEventListener("click", () => {
-    addToCart({ id: item.id, name: item.name, price: Number(item.price||0) });
-  });
-};
 
 // Init
 (async function init(){
@@ -234,13 +358,13 @@ function displaymsg(msg, type = "SUCCESS") {
 
 
 function handleFormSubmit(event) {
-  event.preventDefault(); // Prevent the default form submission behavior   
+  event.preventDefault(); 
   const form = new FormData(event.target);
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const trees = document.getElementById("tree").value;
-  displaymsg(`Thank you, ${name || "Donor"}! You have donated ${trees} Trees. Your donation form has been submitted successfully. We will contact you at ${email || "your email"} soon`);
-  event.target.reset(); // Reset the form fields
+  displaymsg(`Thank you, ${name || "Donor"}! You have donated ${trees} Trees. Your donation form has been submitted successfully. We will contact you  soon`);
+  event.target.reset(); 
 }
 
 
